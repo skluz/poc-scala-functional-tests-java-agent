@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        /* Center the loader */
+        #loader {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            z-index: 1;
+            width: 150px;
+            height: 150px;
+            margin: -75px 0 0 -75px;
+            border: 16px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 16px solid #3498db;
+            width: 120px;
+            height: 120px;
+            -webkit-animation: spin 2s linear infinite;
+            animation: spin 2s linear infinite;
+            display: none;
+        }
+
+        @-webkit-keyframes spin {
+            0% { -webkit-transform: rotate(0deg); }
+            100% { -webkit-transform: rotate(360deg); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        #myDiv {
+            display: none;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<button onclick="showLoader()" name="loadButton">Load</button>
+
+<div id="loader"></div>
+
+<div id="container"></div>
+
+<script type="text/javascript">
+    function showLoader() {
+        document.getElementById("loader").style.display = "block";
+        if(document.getElementById("content")) {
+            document.getElementById("container").removeChild(document.getElementById("content"));
+        }
+        setTimeout(showPage, 1500);
+    }
+    function showPage() {
+        document.getElementById("loader").style.display = "none";
+        createElement()
+    }
+    function createElement() {
+        var div = document.createElement("div");
+        div.id = 'content';
+        div.innerHTML = '<snap id="inner">Tada!</snap>';
+        document.getElementById("container").appendChild(div);
+    }
+</script>
+
+</body>
+</html>

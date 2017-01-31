@@ -1,0 +1,14 @@
+<!DOCTYPE aspectj PUBLIC "-//AspectJ//DTD//EN" "http://www.eclipse.org/aspectj/dtd/aspectj.dtd">
+<aspectj>
+    <aspects>
+        <concrete-aspect name="sandbox.commons.web.logger.SeleniumLoggerImpl" extends="qa.sandbox.commons.web.logger.SeleniumLogger">
+            <pointcut name="logWebDriverAction" expression="execution(* org.openqa.selenium.WebDriver.*(..))"/>
+            <pointcut name="logSearchContextAction" expression="execution(* org.openqa.selenium.SearchContext.*(..))"/>
+            <pointcut name="logWaitForAction" expression="execution(* org.openqa.selenium.support.ui.FluentWait.*(..))"/>
+            <pointcut name="logWebElementAction" expression="execution(* org.openqa.selenium.remote.RemoteWebElement+.*(..))"/>
+        </concrete-aspect>
+        <concrete-aspect name="sandbox.commons.web.logger.WebModelLoggerImpl" extends="qa.sandbox.commons.web.logger.WebModelLogger">
+            <pointcut name="logTraceableAction" expression="execution(@Loggable * sandbox.commons.web.model.WebContext+.*(..))"/>
+        </concrete-aspect>
+    </aspects>
+</aspectj>

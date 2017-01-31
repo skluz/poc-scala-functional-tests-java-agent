@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>component context</title>
+    <style type="text/css">
+        div {
+            background-color: green;
+        }
+        table.GeneratedTable {
+             width: 100%;
+             background-color: #ffffff;
+             border-collapse: collapse;
+             border-width: 2px;
+             border-color: #ffcc00;
+             border-style: solid;
+             color: #000000;
+         }
+
+        table.GeneratedTable td, table.GeneratedTable th {
+            border-width: 2px;
+            border-color: #ffcc00;
+            border-style: solid;
+            padding: 3px;
+        }
+
+        table.GeneratedTable thead {
+            background-color: #ffcc00;
+        }
+    </style>
+</head>
+    <h1>component context test</h1>
+    <div id="firstContainer">
+        <button type="button" name="btn">First</button>
+    </div>
+    <div id="secondContainer">
+        <button type="button" name="btn">Second</button>
+    </div>
+    <br/>
+    <table class="GeneratedTable">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Active</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>24</td>
+            <td>John</td>
+            <td><input type="checkbox" value="active" disabled="true" checked/></td>
+        </tr>
+        <tr>
+            <td>33</td>
+            <td>Edi</td>
+            <td><input type="checkbox" value="active" disabled="true" checked/></td>
+        </tr>
+        <tr>
+            <td>41</td>
+            <td>Stan</td>
+            <td><input type="checkbox" value="active" disabled="true"/></td>
+        </tr>
+        </tbody>
+    </table>
+
+
+</body>
+</html>
