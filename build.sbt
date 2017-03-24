@@ -4,115 +4,64 @@ lazy val commonSettings = Seq(
   version := "0.1-SNAPSHOT",
   scalaVersion := "2.12.1",
   scalacOptions := Seq("-unchecked", "-deprecation", "-feature", "-encoding", "utf8", "-language:reflectiveCalls", "-language:postfixOps"),
-  crossPaths := false,
-  resolvers += "sonatype-snapshots" at "https://oss.sonatype.org/content/repositories/snapshots/"
+  crossPaths := false
 )
 
 lazy val versions = new {
   val TypesafeConfig = "1.3.1"
-  val Logback = "1.1.7"
+  val Logback = "1.2.2"
   val ScalaLogging = "3.5.0"
-  val AkkaHttp = "10.0.0"
-  val Akka = "2.4.14"
-  val WireMock = "2.4.1"
-  val Jackson = "2.8.4"
+  val Jackson = "2.8.7"
   val ScalaTest = "3.0.1"
   val Selenium = "3.0.1"
+  val WireMock = "2.4.1"
   val AspectJWeaver = "1.8.10"
-  val Clapper = "1.1.1"
+  val JavaFaker = "0.13"
 }
 
-lazy val commonDependencies = Seq(
+lazy val commonsDependencies = Seq(
   "com.typesafe" % "config" % versions.TypesafeConfig,
   "ch.qos.logback" % "logback-classic" % versions.Logback,
-  "com.typesafe.scala-logging" %% "scala-logging" % versions.ScalaLogging,
-  "org.scalatest" %% "scalatest" % versions.ScalaTest % "test"
+  "com.typesafe.scala-logging" %% "scala-logging" % versions.ScalaLogging
 )
 
-
 lazy val `qa-sandbox` = (project in file("."))
-  .aggregate(`commons-model`)
-  .aggregate(`commons-utils`)
-  .aggregate(`commons-rest`)
-  .aggregate(`commons-web`)
-  .aggregate(`mock-web`)
-  .aggregate(`mock-rest`)
-  .aggregate(`sample-model`)
-  .aggregate(`sample-rest`)
-  .aggregate(`sample-web`)
-  .aggregate(`sample-perf`)
+  .aggregate(`commons`)
+  .aggregate(`model-store`)
+  .aggregate(`mock-api-store`)
+  .aggregate(`mock-web-store`)
+  .aggregate(`tests-api-store`)
+  .aggregate(`tests-web-store`)
+  .aggregate(`tests-perf-store`)
 
-lazy val `commons-model` = project
+lazy val `commons` = project
   .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-    "org.clapper" %% "classutil" % versions.Clapper
-  ))
-  .dependsOn(`commons-utils`)
-
-lazy val `commons-utils` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.Jackson
-  ))
-
-lazy val `commons-rest` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-
-  ))
-
-lazy val `commons-web` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
+  .settings(libraryDependencies ++= commonsDependencies ++ Seq(
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % versions.Jackson,
+    "com.github.tomakehurst" % "wiremock" % versions.WireMock,
     "org.seleniumhq.selenium" % "selenium-java" % versions.Selenium exclude("org.seleniumhq.selenium", "selenium-java"),
-    "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver
+    "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver,
+    "org.scalatest" %% "scalatest" % versions.ScalaTest,
+    "com.github.javafaker" % "javafaker" % versions.JavaFaker,
+    "com.sparkjava" %"spark-core" % "2.5.5"
   ))
 
-lazy val `mock-web` = project
+lazy val `model-store` = project.settings(commonSettings: _*).dependsOn(`commons`)
+
+lazy val `tests-api-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
+lazy val `tests-perf-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
+
+lazy val `tests-web-store` = project
   .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-    "com.typesafe.akka" %% "akka-http" % versions.AkkaHttp,
-    "com.typesafe.akka" %% "akka-slf4j" % versions.Akka
-  ))
-
-lazy val `mock-rest` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-    "com.github.tomakehurst" % "wiremock" % versions.WireMock
-  ))
-  .dependsOn(`sample-rest`)
-
-lazy val `sample-model` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-
-  ))
-  .dependsOn(`commons-model`)
-
-lazy val `sample-web` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-    "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver
-  ))
-  .dependsOn(`sample-model`, `commons-web` % "test->test;compile->compile")
+  .dependsOn(`commons`, `model-store`)
   .enablePlugins(JavaAgent)
   .settings(
     javaAgents += "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver % "test"
   )
 
-lazy val `sample-rest` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-
-  ))
-  .dependsOn(`sample-model`, `commons-rest` % "test->test;compile->compile")
-
-lazy val `sample-perf` = project
-  .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonDependencies ++ Seq(
-
-  ))
-  .dependsOn(`sample-model`, `sample-rest`)
-
+lazy val `mock-api-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
+lazy val `mock-web-store` = project.settings(commonSettings: _*).dependsOn(`commons`)
 
 commonSettings
