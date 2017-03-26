@@ -14,54 +14,76 @@ lazy val versions = new {
   val Jackson = "2.8.7"
   val ScalaTest = "3.0.1"
   val Selenium = "3.0.1"
-  val WireMock = "2.4.1"
   val AspectJWeaver = "1.8.10"
   val JavaFaker = "0.13"
 }
 
-lazy val commonsDependencies = Seq(
-  "com.typesafe" % "config" % versions.TypesafeConfig,
-  "ch.qos.logback" % "logback-classic" % versions.Logback,
-  "com.typesafe.scala-logging" %% "scala-logging" % versions.ScalaLogging
-)
-
 lazy val `qa-sandbox` = (project in file("."))
   .aggregate(`commons`)
-  .aggregate(`model-store`)
+  .aggregate(`commons-api`)
+  .aggregate(`commons-mock`)
+  .aggregate(`commons-perf`)
+  .aggregate(`commons-web`)
+  .aggregate(`tests-api-store`)
+  .aggregate(`tests-perf-store`)
+  .aggregate(`tests-web-store`)
   .aggregate(`mock-api-store`)
   .aggregate(`mock-web-store`)
-  .aggregate(`tests-api-store`)
-  .aggregate(`tests-web-store`)
-  .aggregate(`tests-perf-store`)
 
 lazy val `commons` = project
   .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= commonsDependencies ++ Seq(
-    "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.Jackson,
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % versions.Jackson,
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % versions.Jackson,
-    "com.github.tomakehurst" % "wiremock" % versions.WireMock,
-    "org.seleniumhq.selenium" % "selenium-java" % versions.Selenium exclude("org.seleniumhq.selenium", "selenium-java"),
-    "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver,
-    "org.scalatest" %% "scalatest" % versions.ScalaTest,
+  .settings(libraryDependencies ++= Seq(
+    "com.typesafe" % "config" % versions.TypesafeConfig,
+    "ch.qos.logback" % "logback-classic" % versions.Logback,
+    "com.typesafe.scala-logging" %% "scala-logging" % versions.ScalaLogging,
     "com.github.javafaker" % "javafaker" % versions.JavaFaker,
-    "com.sparkjava" %"spark-core" % "2.5.5"
+    "org.scalatest" %% "scalatest" % versions.ScalaTest
   ))
 
-lazy val `model-store` = project.settings(commonSettings: _*).dependsOn(`commons`)
+lazy val `commons-api` = project
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= Seq(
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % versions.Jackson
+  ))
+  .dependsOn(`commons`)
 
-lazy val `tests-api-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
-lazy val `tests-perf-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
+lazy val `commons-perf` = project
+  .settings(commonSettings: _*)
+  .dependsOn(`commons`)
 
+lazy val `commons-mock` = project
+  .settings(commonSettings: _*)
+  .dependsOn(`commons`)
+
+lazy val `commons-web` = project
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= Seq(
+    "org.seleniumhq.selenium" % "selenium-java" % versions.Selenium exclude("org.seleniumhq.selenium", "selenium-java"),
+    "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver
+  ))
+  .dependsOn(`commons`)
+
+lazy val `tests-api-store` = project.settings(commonSettings: _*).dependsOn(`commons-api`)
+lazy val `tests-perf-store` = project.settings(commonSettings: _*).dependsOn(`commons-perf`)
 lazy val `tests-web-store` = project
   .settings(commonSettings: _*)
-  .dependsOn(`commons`, `model-store`)
+  .dependsOn(`commons-web`)
   .enablePlugins(JavaAgent)
   .settings(
     javaAgents += "org.aspectj" % "aspectjweaver" % versions.AspectJWeaver % "test"
   )
 
-lazy val `mock-api-store` = project.settings(commonSettings: _*).dependsOn(`commons`, `model-store`)
-lazy val `mock-web-store` = project.settings(commonSettings: _*).dependsOn(`commons`)
+lazy val `mock-api-store` = project
+  .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= Seq(
+    "org.eclipse.jetty" % "jetty-server" % "9.4.2.v20170220",
+    "org.eclipse.jetty" % "jetty-webapp" % "9.4.2.v20170220",
+    "org.scalatra" %% "scalatra" % "2.5.0"
+  ))
+  .dependsOn(`commons-mock`, `tests-api-store`)
+
+lazy val `mock-web-store` = project.settings(commonSettings: _*).dependsOn(`commons-mock`)
 
 commonSettings
