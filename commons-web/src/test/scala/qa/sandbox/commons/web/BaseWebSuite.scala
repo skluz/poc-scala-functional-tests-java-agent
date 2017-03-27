@@ -5,5 +5,4 @@ import qa.sandbox.commons.web.config.DriverFactory
 
 abstract class BaseWebSuite extends BaseSuite {
 
-
 }

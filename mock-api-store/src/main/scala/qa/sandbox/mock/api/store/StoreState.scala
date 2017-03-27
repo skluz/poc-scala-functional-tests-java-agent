@@ -1,3 +1,6 @@
 package qa.sandbox.mock.api.store
 
-case class StoreState()
+import java.time.Instant
+
+case class StoreState(products: Seq[Product])
+case class Product(id: String, name: String, createdAt: Instant)

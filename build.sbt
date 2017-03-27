@@ -16,6 +16,7 @@ lazy val versions = new {
   val Selenium = "3.0.1"
   val AspectJWeaver = "1.8.10"
   val JavaFaker = "0.13"
+  val Scalatra = "2.5.0"
 }
 
 lazy val `qa-sandbox` = (project in file("."))
@@ -55,6 +56,18 @@ lazy val `commons-perf` = project
 
 lazy val `commons-mock` = project
   .settings(commonSettings: _*)
+  .settings(libraryDependencies ++= Seq(
+    "org.eclipse.jetty" % "jetty-server" % "9.4.2.v20170220",
+    "org.eclipse.jetty" % "jetty-webapp" % "9.4.2.v20170220",
+    "org.scalatra" %% "scalatra" % versions.Scalatra,
+    "org.scalatra" %% "scalatra-metrics" % versions.Scalatra,
+    "org.scalatra" %% "scalatra-json" % versions.Scalatra,
+    "org.json4s"   %% "json4s-jackson" % "3.5.1",
+    "org.json4s"   %% "json4s-ext" % "3.5.1",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310" % versions.Jackson,
+    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8" % versions.Jackson
+  ))
   .dependsOn(`commons`)
 
 lazy val `commons-web` = project
@@ -77,11 +90,6 @@ lazy val `tests-web-store` = project
 
 lazy val `mock-api-store` = project
   .settings(commonSettings: _*)
-  .settings(libraryDependencies ++= Seq(
-    "org.eclipse.jetty" % "jetty-server" % "9.4.2.v20170220",
-    "org.eclipse.jetty" % "jetty-webapp" % "9.4.2.v20170220",
-    "org.scalatra" %% "scalatra" % "2.5.0"
-  ))
   .dependsOn(`commons-mock`, `tests-api-store`)
 
 lazy val `mock-web-store` = project.settings(commonSettings: _*).dependsOn(`commons-mock`)
